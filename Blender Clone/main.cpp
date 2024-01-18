@@ -12,7 +12,7 @@
 
 using namespace gl;
 
-int maxValue = 10; 
+float maxValue = -100;
 
 
 // Quelques couleurs en format RGB réel (0 à 1).
@@ -26,10 +26,10 @@ float brightYellow[] = { 1.0f, 1.0f, 0.2f };
 std::vector<std::vector<float>> colors = {
 		{0.5f, 0.5f, 0.5f},     // grey
 		{1.0f, 1.0f, 1.0f},     // white
-		{1.0f, 0.2f, 0.2f},     // brightRed
-		{0.2f, 1.0f, 0.2f},     // brightGreen
-		{0.2f, 0.2f, 1.0f},     // brightBlue
-		{1.0f, 1.0f, 0.2f}      // brightYellow
+		//{1.0f, 0.2f, 0.2f},     // brightRed
+		//{0.2f, 1.0f, 0.2f},     // brightGreen
+		//{0.2f, 0.2f, 1.0f},     // brightBlue
+		//{1.0f, 1.0f, 0.2f}      // brightYellow
 };
 
 struct Vertex {
@@ -43,9 +43,9 @@ struct Face {
 void drawTriangle(Vertex v1, Vertex v2, Vertex v3, std::vector<float>& color) {
 	glColor3fv(color.data());
 	glBegin(GL_TRIANGLES); {
-		glVertex3f(v1.x * maxValue, v1.y * maxValue, v1.z * maxValue);
-		glVertex3f(v2.x * maxValue, v2.y * maxValue, v2.z * maxValue);
-		glVertex3f(v3.x * maxValue, v3.y * maxValue, v3.z * maxValue);
+		glVertex3f(v1.x / maxValue, v1.y / maxValue, v1.z / maxValue);
+		glVertex3f(v2.x / maxValue, v2.y / maxValue, v2.z / maxValue);
+		glVertex3f(v3.x / maxValue, v3.y / maxValue, v3.z / maxValue);
 	} glEnd();
 }
 
@@ -53,7 +53,7 @@ void drawTriangle(Vertex v1, Vertex v2, Vertex v3, std::vector<float>& color) {
 void drawObject(std::vector<Face> faces, std::vector<Vertex> vertices) {
 	int index = 0;
 	for (Face face : faces) {
-		drawTriangle(vertices[face.v1 - 1], vertices[face.v2 - 1], vertices[face.v3 - 1], colors[index % 6]);
+		drawTriangle(vertices[face.v1 - 1], vertices[face.v2 - 1], vertices[face.v3 - 1], colors[index % 2]);
 		index++;
 	}
 }
@@ -65,7 +65,7 @@ std::vector<Vertex> parseFile(std::string filename, std::vector<Face>& faces) {
 	std::ifstream file(filename);
 	if (!file.is_open()) {
 		std::cerr << "Error opening file: " << filename << std::endl;
-		return vertices; // Return empty vector on error
+		return vertices; 
 	}
 
 	std::string line;
@@ -77,7 +77,7 @@ std::vector<Vertex> parseFile(std::string filename, std::vector<Face>& faces) {
 		if (type == "v") {
 			Vertex v;
 			iss >> v.x >> v.y >> v.z;
-			//maxValue = std::max((int)std::max(std::max(v.x, v.y), v.z), maxValue);
+			maxValue = std::max((float)std::max(std::max(v.x, v.y), v.z), maxValue);
 
 			vertices.push_back(v);
 		}
@@ -90,31 +90,17 @@ std::vector<Vertex> parseFile(std::string filename, std::vector<Face>& faces) {
 			while (iss >> token) {
 				size_t pos = token.find('/');
 				if (pos != std::string::npos) {
-					// Extract the vertex index and convert to integer
 					int index = std::stoi(token.substr(0, pos));
 					indices.push_back(index);
 				}
 			}
 
-			switch (indices.size()) {
-			case 3: 
-				f1.v1 = indices[0];
-				f1.v2 = indices[1];
-				f1.v3 = indices[2];
+			for (int i = 1; i < indices.size() - 1; i++) {
+				f1.v1 = indices[0]; 
+				f1.v2 = indices[i]; 
+				f1.v3 = indices[i + 1];
 				faces.push_back(f1);
-				break; 
-			case 4: 
-				f1.v1 = indices[0];
-				f1.v2 = indices[1];
-				f1.v3 = indices[2];
-				faces.push_back(f1);
-				f2.v1 = indices[0];
-				f2.v2 = indices[2];
-				f2.v3 = indices[3];
-				faces.push_back(f2);
-				break; 
 			}
-			
 		}
 	}
 
@@ -123,7 +109,7 @@ std::vector<Vertex> parseFile(std::string filename, std::vector<Face>& faces) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string filename = "C:\\Users\\Yassine\\Documents\\Personnal Cpp Projects\\Blender Clone\\Blender Clone\\Cube.obj";
+	std::string filename = "C:\\Users\\yassi\\OneDrive\\Documents\\3D-Engine\\Blender Clone\\chevrolet.obj";
 	std::vector<Face> faces;
 	std::vector<Vertex> objVertices = parseFile(filename, faces);
 
@@ -134,6 +120,8 @@ int main(int argc, char* argv[]) {
 	for (const auto& face : faces) {
 		std::cout << "FACE: (" << face.v1 << ", " << face.v2 << ", " << face.v3 << ")\n";
 	}*/
+
+	std::cout << maxValue;
 
 
 
@@ -150,7 +138,7 @@ int main(int argc, char* argv[]) {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glFrustum(-1.0, 1.0, -1.0, 1.0, 1, 10);
+	glFrustum(-1.0, 1.0, -1.0, 1.0, 3, 10);
 	glTranslatef(0, 0, -6);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -171,7 +159,7 @@ int main(int argc, char* argv[]) {
 	while (window.isOpen()) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glRotatef(1, 1, 1, 0);
+		glRotatef(1, 0, 1, 0);
 
 		// Commentez/décommentez chacune des lignes pour tester chaque affichage.
 		// drawWhiteTriangle();
