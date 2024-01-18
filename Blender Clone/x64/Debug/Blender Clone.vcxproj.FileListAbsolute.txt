@@ -1,2 +1,0 @@
-C:\Users\Yassine\Documents\Personnal Cpp Projects\Blender Clone\Blender Clone\x64\Debug\Blender Clone.vcxproj.CopyComplete
-C:\Users\yassi\OneDrive\Documents\3D-Engine\Blender Clone\x64\Debug\Blender Clone.vcxproj.CopyComplete
