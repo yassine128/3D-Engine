@@ -109,7 +109,7 @@ std::vector<Vertex> parseFile(std::string filename, std::vector<Face>& faces) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string filename = "C:\\Users\\yassi\\OneDrive\\Documents\\3D-Engine\\Blender Clone\\chevrolet.obj";
+	std::string filename = "..\\3d models\\chair_01.obj";
 	std::vector<Face> faces;
 	std::vector<Vertex> objVertices = parseFile(filename, faces);
 
@@ -156,7 +156,23 @@ int main(int argc, char* argv[]) {
 	glCullFace(GL_BACK);
 
 	// Boucle d'exécution
+
+	double lastTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	int nbFrames = 0;
+
 	while (window.isOpen()) {
+
+		double currentTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+		nbFrames++;
+
+		if (currentTime - lastTime >= 1000.0) { 
+			// printf and reset timer
+			std::cout << 1000.0 / static_cast<double>(nbFrames) << " ms/frame\n";
+			nbFrames = 0;
+			lastTime += 1000.0;
+		}
+
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glRotatef(1, 0, 1, 0);
