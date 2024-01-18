@@ -1,4 +1,4 @@
-#3D Rendering Engine
+## 3D Rendering Engine
 
 **Description:**
 This project is a custom-built 3D rendering engine designed for real-time graphics. The engine features a file parser capable of interpreting obj files exported from Blender, facilitating seamless integration with various 3D models. The current implementation achieves real-time rendering on the screen, laying a solid foundation in computer graphics principles.
